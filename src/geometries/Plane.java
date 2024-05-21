@@ -3,11 +3,29 @@ package geometries;
 import primitives.Point;
 import primitives.Vector;
 
+/**
+ * class Plane is a class representing a plane
+ * of Euclidean geometry in Cartesian 3-Dimensional coordinate system.
+ *
+ * @author Ester Drey and Avigail Bash
+ */
 public class Plane implements Geometry
 {
-
+    /**
+     * normal vector to the plane
+     */
     private Vector vector;
+    /**
+     * point in plane
+     */
     private Point point;
+
+    /**
+     * Constructor to initialize Plane based on three points in plane
+     * @param p0 first point in plane
+     * @param p1 second point in plane
+     * @param p2 third point in plane
+     */
     public Plane(Point p0, Point p1, Point p2)
     {
         Vector v0 = p0.subtract(p1);
@@ -18,12 +36,21 @@ public class Plane implements Geometry
         point=v1;
     }
 
+    /**
+     *  Constructor to initialize Plane based on a normal vector and point in plane
+     * @param v0  point in plane
+     * @param v1  normal vector to plane
+     */
     public Plane(Point v0, Vector v1)
     {
         vector=v1.normalize();
         point=v0;
     }
 
+    /**
+     *  getter to normal vector to plane normal
+     * @return
+     */
     public Vector getNormal()
     {
         return vector.normalize();
