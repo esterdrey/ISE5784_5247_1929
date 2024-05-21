@@ -33,7 +33,7 @@ public class Plane implements Geometry
         Vector v2 = v0.crossProduct(v1);
         v2.normalize();
         this.vector = v2;
-        point=v1;
+        point = p1;
     }
 
     /**
