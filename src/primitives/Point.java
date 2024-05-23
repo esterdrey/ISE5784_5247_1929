@@ -75,6 +75,10 @@ public class Point
         return Math.sqrt(distanceSquared(p1));
     }
 
+    public Double3 getXyz() {
+        return xyz;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
