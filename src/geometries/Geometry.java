@@ -9,7 +9,7 @@ import primitives.*;
  *
  * @author Ester Drey and Avigail Bash
  */
-public interface Geometry
+public interface Geometry  extends Intersectable
 {
     public Vector getNormal(Point point);
 }

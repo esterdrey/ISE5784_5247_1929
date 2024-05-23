@@ -4,15 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class PlaneTest {
-
-    @Test
-    void testGetNormal() {
-    }
-
-    @Test
-    void testTestGetNormal() {
-    }
+class GeometriesTest {
 
     @Test
     void testFindIntersections() {

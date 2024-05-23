@@ -1,6 +1,8 @@
 package geometries;
 import primitives.*;
 
+import java.util.List;
+
 /**
  * class Sphere is a class representing a sphere
  * of Euclidean geometry in Cartesian 3-Dimensional coordinate system.
@@ -32,5 +34,10 @@ public class Sphere extends RadialGeometry
         Vector v1 = center.subtract(point);
         v1.normalize();
         return v1;
+    }
+
+    @Override
+    public List<Point> findIntersections(Ray ray) {
+        return null;
     }
 }
