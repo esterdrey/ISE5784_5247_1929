@@ -15,7 +15,7 @@ public class Ray
     /**
      * direction vector of the ray
      */
-    private final Vector vector;
+    private final Vector dir;
 
     /**
      *  Constructor to initialize Ray based on point and a vector
@@ -25,7 +25,7 @@ public class Ray
     public Ray(Point p1, Vector v1)
     {
         point = p1;
-       vector= v1.normalize();
+       dir = v1.normalize();
     }
 
     @Override
@@ -33,14 +33,14 @@ public class Ray
         if (this == obj) return true;
         return (obj instanceof Ray other)
                 && this.point.equals(other.point)
-                && this.vector.equals(other.vector);
+                && this.dir.equals(other.dir);
     }
 
     public Point getPoint() {
         return point;
     }
 
-    public Vector getVector() {
-        return vector;
+    public Vector getDir() {
+        return dir;
     }
 }

@@ -38,6 +38,37 @@ public class Sphere extends RadialGeometry
 
     @Override
     public List<Point> findIntersections(Ray ray) {
+        Point p0 = ray.getPoint();
+        Point o = center;
+        Vector u = o.subtract(p0);
+        Vector v = ray.getDir();
+
+        double tm = v.dotProduct(u);
+        double d = Math.sqrt(u.lengthSquared()-( tm * tm));
+        if(d >= radius)
+        {
+            return null;
+        }
+        double th = Math.sqrt(radius * radius - d * d);
+        double t1 = tm - th;
+        double t2 = tm + th;
+
+        if(t1 > 0 && t2 > 0)
+        {
+            Point p1=p0.add(v.scale(t1));
+            Point p2=p0.add(v.scale(t2));
+            return List.of(p1,p2);
+        }
+        if(t1 > 0)
+        {
+            Point p1=p0.add(v.scale(t1));
+            return List.of(p1);
+        }
+        if(t2 > 0)
+        {
+            Point p2=p0.add(v.scale(t2));
+            return List.of(p2);
+        }
         return null;
     }
 }
