@@ -11,7 +11,7 @@ import java.util.List;
 
 /**
  * Testing Polygons
- * @author Ester Drey Avigail Bash
+ * @author Ester Drey and Avigail Bash
  */
 public class PolygonTests {
    /**

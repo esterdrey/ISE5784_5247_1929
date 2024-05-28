@@ -4,6 +4,8 @@ import primitives.Point;
 import primitives.Ray;
 import primitives.Vector;
 
+import java.util.List;
+
 /**
  * class Tube is a class representing a tube
  * of Euclidean geometry in Cartesian 3-Dimensional coordinate system.
@@ -46,5 +48,10 @@ public class Tube extends RadialGeometry
         Point O = p0.add(v.scale(d));//calculate the "new" center of the tube that is in front of the given point
         Vector normal = point.subtract(O);//calculate the normal
         return normal.normalize();
+    }
+
+    @Override
+    public List<Point> findIntersections(Ray ray) {
+        return List.of();
     }
 }

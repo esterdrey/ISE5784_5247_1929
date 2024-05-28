@@ -11,8 +11,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class PointTest {
 
     /**
-     * Delta value for accuracy when comparing the numbers of type 'double' in
-     * assertEquals
+     * Delta value for accuracy when comparing the numbers of type 'double' in assertEquals
      */
     private final double DELTA = 0.000001;
 
@@ -67,9 +66,9 @@ class PointTest {
     {
         // ============ Equivalence Partitions Tests ==============
         // TC01:Checking the function Distance
-        Point p1 = new Point(3, 3, 5);
-        Point p2 = new Point(1, 2, 3);
-        assertEquals(3, p1.distance(p2), DELTA, "ERROR: Distance() wrong value");
+        Point p1 = new Point(3, 4, 5);
+        Point p2 = new Point(0, 0, 5);
+        assertEquals(5, p1.distance(p2), DELTA, "ERROR: Distance() wrong value");
 
 
         // =============== Boundary Values Tests ==================

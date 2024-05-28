@@ -17,7 +17,16 @@ class SphereTest {
     private final Vector v001 = new Vector(0, 0, 1);
 
     @Test
-    void testGetNormal() {
+    void testGetNormal()
+    {
+        Sphere s1 = new Sphere( new Point(1, 2, 3),1);
+        // ============ Equivalence Partitions Tests ==============
+        Vector v = s1.getNormal(new Point(2, 2, 3));
+        // TC01: Test that the normal is the right one
+        assertEquals(new Vector(1, 0, 0),
+                v,
+                "getNormal() wrong result");
+
     }
 
     @Test
