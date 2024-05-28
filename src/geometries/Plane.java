@@ -77,7 +77,7 @@ public class Plane implements Geometry
        double v_dir=v.dotProduct(dir);
        if(isZero(v_dir))
            return null;
-       double dir_p_p0=alignZero(dir.dotProduct(p.subtract(p0)));
+       double dir_p_p0=alignZero(v.dotProduct(p.subtract(p0)));
        if(isZero(dir_p_p0))
            return null;
        double t=(dir_p_p0)/v_dir;
