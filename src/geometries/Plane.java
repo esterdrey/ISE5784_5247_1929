@@ -87,5 +87,5 @@ public class Plane implements Geometry
        return List.of(p1);
 
        }
-    }
+
 }
