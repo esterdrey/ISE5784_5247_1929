@@ -1,6 +1,8 @@
 package geometries;
 import primitives.*;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -38,14 +40,21 @@ public class Sphere extends RadialGeometry
 
     @Override
     public List<Point> findIntersections(Ray ray) {
+
         Point p0 = ray.getPoint();
-        Point o = center;
-        Vector u = o.subtract(p0);
+        Vector u;
+        try {
+            u = center.subtract(p0);
+        }
+        catch (IllegalArgumentException e)
+        {
+            return List.of(ray.getPoint(radius));
+        }
         Vector v = ray.getDir();
 
         double tm = v.dotProduct(u);
         double d = Math.sqrt(u.lengthSquared()-( tm * tm));
-        if(d >= radius)
+        if(Util.alignZero(d-radius)>=0)
         {
             return null;
         }
@@ -53,22 +62,26 @@ public class Sphere extends RadialGeometry
         double t1 = tm - th;
         double t2 = tm + th;
 
-        if(t1 > 0 && t2 > 0)
+        if(Util.alignZero(t1)<=0 && Util.alignZero(t2 )<=0)
         {
-            Point p1=p0.add(v.scale(t1));
-            Point p2=p0.add(v.scale(t2));
-            return List.of(p1,p2);
+           return null;
         }
-        if(t1 > 0)
+        List<Point> intersections=new ArrayList<>();
+
+        if(Util.alignZero(t1) > 0)
         {
-            Point p1=p0.add(v.scale(t1));
-            return List.of(p1);
+            intersections.add(ray.getPoint(t1));
         }
-        if(t2 > 0)
+        if(Util.alignZero(t2) > 0)
         {
-            Point p2=p0.add(v.scale(t2));
-            return List.of(p2);
+            intersections.add(ray.getPoint(t2));
         }
-        return null;
+        if (intersections.isEmpty())
+        {
+            return null;
+        }
+        intersections.sort(Comparator.comparingDouble(p -> p.distance(ray.getPoint())));
+
+       return List.copyOf(intersections);
     }
 }

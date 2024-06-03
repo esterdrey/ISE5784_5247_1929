@@ -32,9 +32,9 @@ public class Triangle  extends Polygon
         Vector n2 = (v2.crossProduct(v3)).normalize();
         Vector n3 = (v3.crossProduct(v1)).normalize();
 
-        double t1=alignZero(n1.dotProduct(ray.getDir()));
-        double t2=alignZero(n2.dotProduct(ray.getDir()));
-        double t3=alignZero(n3.dotProduct(ray.getDir()));
+        double t1=n1.dotProduct(ray.getDir());
+        double t2=n2.dotProduct(ray.getDir());
+        double t3=n3.dotProduct(ray.getDir());
 
         if((t1 > 0 && t2 > 0 && t3 > 0) ||(t1 < 0 && t2 < 0 && t3 < 0))
         {
