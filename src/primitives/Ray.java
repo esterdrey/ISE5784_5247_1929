@@ -26,6 +26,7 @@ public class Ray
     {
         point = p1;
        dir = v1.normalize();
+       p1=point;
     }
 
     @Override

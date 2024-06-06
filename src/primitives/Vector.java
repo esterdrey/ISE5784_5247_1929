@@ -100,8 +100,7 @@ public class Vector extends Point {
      * @return a new normalized vector
      */
     public Vector normalize() {
-        double length = this.length();
-        return new Vector(this.xyz.d1 / length, this.xyz.d2 / length, this.xyz.d3 / length);
+        return new Vector(this.xyz.reduce(this.length()));
     }
 
     @Override
