@@ -14,6 +14,9 @@ public class Camera implements Cloneable {
     private Double height = 0.0;
     private Double width = 0.0;
     private Double distance = 0.0;
+    private ImageWriter imageWriter;
+    private RayTracerBase rayTracer;
+
 
     public Camera() {
         height = 0.0;
@@ -63,6 +66,34 @@ public class Camera implements Cloneable {
 
     }
 
+    public Camera renderImage()
+    {
+        for(int i=0;i< imageWriter.getNy();i++)
+            for(int j=0;j< imageWriter.getNx();j++)
+                castRay(imageWriter.getNx(),imageWriter.getNy(),j,i);
+        return this;
+    }
+
+    private void castRay(int nX, int nY, int j, int i) {
+        Ray ray=constructRay(nX, nY, j, i);
+        Color color = rayTracer.traceRay(ray);
+        imageWriter.writePixel(j,i,color);
+    }
+
+
+    public Camera printGrid(int interval, Color color) {
+        for (int j = 0; j < imageWriter.getNx(); j++)
+            for (int i = 0; i < imageWriter.getNy(); i++)
+                if (Util.isZero(j % interval) ||Util.isZero(i % interval))
+                    imageWriter.writePixel(j, i, color);
+        return this;
+    }
+
+    public void writeToImage()
+    {
+        imageWriter.writeToImage();
+    }
+
 
     public static class Builder {
         private final Camera camera = new Camera();
@@ -95,6 +126,20 @@ public class Camera implements Cloneable {
             return this;
         }
 
+        public Builder setRayTracerBase(RayTracerBase rayTracerBase) {
+            camera.rayTracer = rayTracerBase;
+            return this;
+        }
+        public Builder setRayTracer(SimpleRayTracer simpleRayTracer) {
+            camera.rayTracer=simpleRayTracer;
+            return this;
+        }
+
+        public Builder setImageWriter(ImageWriter imageWriter) {
+            camera.imageWriter = imageWriter;
+            return this;
+        }
+
         public Camera build() {
             String missingResource = "Missing Resource";
             if (camera.place == null)
@@ -112,12 +157,19 @@ public class Camera implements Cloneable {
                 throw new IllegalArgumentException("Negative size");// checking the parameters himself
             if (camera.distance < 0.0)
                 throw new IllegalArgumentException("Negative distance");
+            if (camera.imageWriter == null)
+                throw new MissingResourceException(missingResource,Camera.class.getName(),"imageWriter");
+
+            if (camera.rayTracer == null)
+                throw new MissingResourceException(missingResource, Camera.class.getName(), "rayTracer");
+
 
             camera.vTo = camera.vTo.normalize();
             camera.vUp = camera.vUp.normalize();
             camera.vRight = camera.vTo.crossProduct(camera.vUp).normalize();
             return camera;
         }
+
 
 
     }
