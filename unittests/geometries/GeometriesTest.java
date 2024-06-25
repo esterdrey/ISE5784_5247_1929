@@ -7,17 +7,31 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * A class to test the Geometries class.
+ */
 class GeometriesTest {
 
+
+    /**
+     * Test for FindIntersections
+     */
     @Test
-    void testFindIntersections()
-    {
+    void testFindIntersections() {
+
         // ============ Equivalence Partitions Tests ==============
-        Sphere sph = new Sphere( new Point(1, 0, 0),1);
-        Sphere sph1 = new Sphere( new Point(-5, 0, 0),1);
-        Triangle tri = new Triangle(new Point(3, 0, 1), new Point(3, -2, -1), new Point(3, 2, -1));
         // TC01: Some of the shapes are intersected but not all of them
-        Geometries geom = new Geometries(sph, tri, sph1);
+        Geometries geom = new Geometries(
+                new Sphere(
+                        new Point(1, 0, 0), 1),
+                new Sphere(
+                        new Point(-5, 0, 0), 1),
+                new Triangle(
+                        new Point(3, 0, 1),
+                        new Point(3, -2, -1),
+                        new Point(3, 2, -1)
+                )
+        );
         List<Point> result = geom.findIntersections(new Ray(new Point(-3, 0, 0), new Vector(1, 0, 0)));
         assertEquals(3, result.size(), "dose not work when some of the shapes are intersected but not all of them");
 

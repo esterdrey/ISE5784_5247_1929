@@ -33,6 +33,11 @@ public class Tube extends RadialGeometry
     }
 
 
+    /**
+     * find the normal
+     * @param point
+     * @return the normal
+     */
     @Override
     public Vector getNormal(Point point)
     {
@@ -51,7 +56,7 @@ public class Tube extends RadialGeometry
     }
 
     @Override
-    public List<Point> findIntersections(Ray ray) {
+    public List<GeoPoint> findGeoIntersectionsHelper(Ray ray) {
         return List.of();
     }
 }

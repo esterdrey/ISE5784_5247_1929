@@ -45,6 +45,11 @@ public class Double3 {
       this.d3 = value;
    }
 
+   /**
+    * Override equals method
+    * @param obj
+    * @return object
+    */
    @Override
    public boolean equals(Object obj) {
       if (this == obj) return true;
@@ -54,9 +59,17 @@ public class Double3 {
             && isZero(d3 - other.d3);
    }
 
+   /**
+    * Override hashCode method
+    * @return
+    */
    @Override
    public int hashCode() { return (int) Math.round(d1 + d2 + d3); }
 
+   /**
+    * Override toString method
+    * @return object
+    */
    @Override
    public String toString() { return "(" + d1 + "," + d2 + "," + d3 + ")"; }
 

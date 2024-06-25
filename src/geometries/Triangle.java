@@ -3,8 +3,6 @@ import primitives.*;
 
 import java.util.List;
 
-import static primitives.Util.alignZero;
-
 /**
  * class Triangle is a basic class representing a triangle
  * of Euclidean geometry in Cartesian 3-Dimensional coordinate system.
@@ -14,13 +12,19 @@ import static primitives.Util.alignZero;
 public class Triangle  extends Polygon
 {
 
+    /**
+     * Constructs a Triangle object with three given points.
+     * @param p1 the first point of the triangle
+     * @param p2  the second point of the triangle
+     * @param p3 the third point of the triangle
+     */
     public Triangle(Point p1, Point p2, Point p3)
     {
         super(p1, p2, p3);
     }
 
     @Override
-    public List<Point> findIntersections(Ray ray)
+    public List<GeoPoint> findGeoIntersectionsHelper(Ray ray)
     {
         if(this.plane.findIntersections(ray)==null)
             return null;
@@ -38,7 +42,7 @@ public class Triangle  extends Polygon
 
         if((t1 > 0 && t2 > 0 && t3 > 0) ||(t1 < 0 && t2 < 0 && t3 < 0))
         {
-            return this.plane.findIntersections(ray);
+            return this.plane.findGeoIntersections(ray);
         }
         return null;
     }

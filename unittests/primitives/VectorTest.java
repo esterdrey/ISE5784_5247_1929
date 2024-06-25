@@ -98,7 +98,7 @@ class VectorTest {
     @Test
     void testSubtract() {
         Vector v1 = new Vector(1, 2, 3);
-
+        // ============ Equivalence Partitions Tests ==============
         assertThrows(IllegalArgumentException.class,
                 () -> v1.subtract(v1),
                 "ERROR: Vector - itself does not throw an exception");

@@ -52,7 +52,7 @@ class SphereTest {
         assertEquals(2, result1.size(), "Wrong number of points");
         assertEquals(exp1, result1, "Ray crosses sphere");
         // TC03: Ray starts inside the sphere (1 point)
-       var intersactions = sphere.findIntersections(new Ray(new Point(0.5, 0, 0), new Vector(3,1,0)));
+        var intersactions = sphere.findIntersections(new Ray(new Point(0.5, 0, 0), new Vector(3,1,0)));
         assertEquals(1, intersactions.size(), "Wrong number of points");
 
         // TC04: Ray starts after the sphere (0 points)
@@ -102,7 +102,7 @@ class SphereTest {
 
         // **** Group: Ray's line is tangent to the sphere (all tests 0 points)
         // TC19: Ray starts before the tangent point
-       intersactions = sphere.findIntersections(new Ray(new Point(-1,1,0), new Vector(3,1,0)));
+        intersactions = sphere.findIntersections(new Ray(new Point(-1,1,0), new Vector(3,1,0)));
         assertNull(intersactions,"Ray's line out of sphere");
 
         // TC20: Ray starts at the tangent point

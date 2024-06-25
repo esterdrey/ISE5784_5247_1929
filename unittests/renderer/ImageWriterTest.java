@@ -3,9 +3,7 @@ package renderer;
 import org.junit.jupiter.api.Test;
 import primitives.*;
 
-import javax.swing.*;
 
-import static org.junit.jupiter.api.Assertions.*;
 
 class ImageWriterTest {
 

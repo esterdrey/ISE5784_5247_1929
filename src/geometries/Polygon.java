@@ -13,7 +13,7 @@ import primitives.Vector;
  * system
  * @author Ester Drey and Avigail Bash
  */
-public class Polygon implements Geometry {
+public class Polygon extends Geometry {
    /** List of polygon's vertices */
    protected final List<Point> vertices;
    /** Associated plane in which the polygon lays */
@@ -80,11 +80,22 @@ public class Polygon implements Geometry {
       }
    }
 
+   /**
+    * find the normal of the polygon
+    * @param point
+    * @return the normal
+    */
    @Override
    public Vector getNormal(Point point) { return plane.getNormal(); }
 
+
+   /**
+    *
+    * @param ray
+    * @return
+    */
    @Override
-   public List<Point> findIntersections(Ray ray) {
+   public List<GeoPoint> findGeoIntersectionsHelper(Ray ray) {
       return null;
    }
 }

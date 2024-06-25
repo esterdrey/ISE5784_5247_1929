@@ -6,7 +6,7 @@ package geometries;
  *
  * @author Ester Drey and Avigail Bash
  */
-public abstract class RadialGeometry implements Geometry
+public abstract class RadialGeometry extends Geometry
 {
     /**
      * the geometry radius
