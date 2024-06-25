@@ -7,6 +7,7 @@ import primitives.Vector;
 public class SpotLight extends  PointLight{
 
    private Vector direction;
+    private double narrowBeam = 1;
 
     public SpotLight(Color intensity,Point position, Vector direction) {
         super(intensity,position);
@@ -38,5 +39,10 @@ public class SpotLight extends  PointLight{
     @Override
     public Vector getL(Point p) {
         return super.getL(p);
+    }
+
+    public SpotLight setNarrowBeam(double narrowBeam) {
+        this.narrowBeam = narrowBeam;
+        return this;
     }
 }

@@ -27,7 +27,7 @@ public class Scene {
     /** The ambient light of the scene */
     public AmbientLight ambientLight=AmbientLight.NONE;
 
-    List<LightSource> lights=new LinkedList<>();
+    public List<LightSource> lights=new LinkedList<>();
 
     /**
      * Constructor for scene
