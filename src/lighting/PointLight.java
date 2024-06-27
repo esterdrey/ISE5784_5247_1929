@@ -9,12 +9,12 @@ public class PointLight extends Light implements LightSource {
     private Point position;
     private double kC=1,kL=0,kQ=0;
 
+
+
     public PointLight(Color intensity,Point position) {
         super(intensity);
         this.position = position;
     }
-
-
 
     /**
      * get the intensity of point light
@@ -27,6 +27,8 @@ public class PointLight extends Light implements LightSource {
 
     @Override
     public Vector getL(Point p) {
+        if (p.equals(position))
+            return null;
         return p.subtract(position).normalize();
     }
 

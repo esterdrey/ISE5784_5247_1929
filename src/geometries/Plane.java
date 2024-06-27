@@ -2,7 +2,6 @@ package geometries;
 
 import primitives.*;
 
-import java.util.LinkedList;
 import java.util.List;
 
 import static primitives.Util.*;
@@ -74,7 +73,7 @@ public class Plane extends Geometry
     @Override
     protected List<GeoPoint> findGeoIntersectionsHelper(Ray ray) {
         double numerator=vector.dotProduct(point.subtract(ray.getPoint()));
-        double denumerator=vector.dotProduct(ray.getDir());
+        double denumerator=vector.dotProduct(ray.getDirection());
 
         if(isZero(denumerator))
         {

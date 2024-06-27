@@ -41,7 +41,7 @@ public class Tube extends RadialGeometry
     @Override
     public Vector getNormal(Point point)
     {
-        Vector v = axis.getDir();//get the direction vector
+        Vector v = axis.getDirection();//get the direction vector
         Point p0 = axis.getPoint();//get the head point of the cylinder's ray
         double d = v.dotProduct(point.subtract(p0));//calculate the projection of the point on tube's ray
         if(d == 0)
