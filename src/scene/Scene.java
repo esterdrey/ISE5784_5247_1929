@@ -16,7 +16,7 @@ import java.util.List;
 public class Scene {
 
     /** The geometries in the scene */
-    public Geometries geometries=new Geometries();
+        public Geometries geometries=new Geometries();
 
     /** The name of the scene */
     public String name;
@@ -50,11 +50,11 @@ public class Scene {
 
     /**
      * Updates the background color of the scene.
-     * @param back  The new background color.
+     * @param background  The new background color.
      * @return This Scene object.
      */
-    public Scene setBackground(Color back) {
-        this.background = back;
+    public Scene setBackground(Color background) {
+        this.background = background;
         return this;
     }
 

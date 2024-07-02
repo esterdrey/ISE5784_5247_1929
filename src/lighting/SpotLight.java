@@ -8,7 +8,7 @@ import static primitives.Util.alignZero;
 
 public class SpotLight extends  PointLight{
 
-   private Vector direction;
+   private final Vector direction;
     private double narrowBeam = 1;
 
     public SpotLight(Color intensity,Point position, Vector direction) {
@@ -35,8 +35,11 @@ public class SpotLight extends  PointLight{
 
     @Override
     public Color getIntensity(Point p) {
-       return super.getIntensity(p).scale(Math.max(0, direction.dotProduct(getL(p))));
+        double dotProduct = alignZero(direction.dotProduct(getL(p)));
+        return dotProduct <= 0 ? Color.BLACK : super.getIntensity(p).scale(Math.pow(dotProduct, narrowBeam));
     }
+
+
 
     @Override
     public Vector getL(Point p) {

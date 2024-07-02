@@ -14,7 +14,7 @@ import java.util.*;
 public class Geometries extends Intersectable {
 
 
-    List<Intersectable> geometries = new LinkedList<Intersectable>();
+   private List<Intersectable> geometries = new LinkedList<>();
 
     /**
      * a constructor

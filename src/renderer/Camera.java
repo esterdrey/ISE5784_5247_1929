@@ -44,12 +44,12 @@ public class Camera implements Cloneable {
     /**
      * The width of the view plane.
      */
-    private Double width = 0.0;
+    private Double width ;
 
     /**
      * The distance from the camera to the view plane.
      */
-    private Double distance = 0.0;
+    private Double distance ;
     private ImageWriter imageWriter;
     private RayTracerBase rayTracer;
 
@@ -211,6 +211,7 @@ public class Camera implements Cloneable {
                 throw new IllegalArgumentException("The vectors are not orthogonals");
             camera.vUp = up.normalize();
             camera.vTo = to.normalize();
+            camera.vRight = camera.vTo.crossProduct(camera.vUp).normalize();
             return this;
         }
 
