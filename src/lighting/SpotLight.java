@@ -18,25 +18,26 @@ public class SpotLight extends  PointLight{
     }
 
     @Override
-    public SpotLight setkL(double kL) {
-        return (SpotLight) super.setkL(kL);
+    public SpotLight setKL(double KL) {
+        return (SpotLight) super.setKL(KL);
 
     }
 
     @Override
-    public SpotLight setkQ(double kQ) {
-        return (SpotLight)super.setkQ(kQ);
+    public SpotLight setKQ(double KQ) {
+        return (SpotLight)super.setKQ(KQ);
     }
 
     @Override
-    public SpotLight setkC(double kC) {
-        return (SpotLight)super.setkC(kC);
+    public SpotLight setKC(double KC) {
+        return (SpotLight)super.setKC(KC);
     }
 
     @Override
     public Color getIntensity(Point p) {
         double dotProduct = alignZero(direction.dotProduct(getL(p)));
         return dotProduct <= 0 ? Color.BLACK : super.getIntensity(p).scale(Math.pow(dotProduct, narrowBeam));
+
     }
 
 
@@ -50,4 +51,6 @@ public class SpotLight extends  PointLight{
         this.narrowBeam = narrowBeam;
         return this;
     }
+
+
 }

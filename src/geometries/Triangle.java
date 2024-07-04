@@ -27,26 +27,7 @@ public class Triangle  extends Polygon
 
     @Override
     public List<GeoPoint> findGeoIntersectionsHelper(Ray ray) {
-//        if(this.plane.findIntersections(ray)==null)
-//            return null;
-//        Vector v1 = this.vertices.get(0).subtract(ray.getPoint());
-//        Vector v2 =this.vertices.get(1).subtract(ray.getPoint());
-//        Vector v3 = this.vertices.get(2).subtract(ray.getPoint());
-//
-//        Vector n1 = (v1.crossProduct(v2)).normalize();
-//        Vector n2 = (v2.crossProduct(v3)).normalize();
-//        Vector n3 = (v3.crossProduct(v1)).normalize();
-//
-//        double t1=n1.dotProduct(ray.getDirection());
-//        double t2=n2.dotProduct(ray.getDirection());
-//        double t3=n3.dotProduct(ray.getDirection());
-//
-//        if((t1 > 0 && t2 > 0 && t3 > 0) ||(t1 < 0 && t2 < 0 && t3 < 0))
-//        {
-//            return this.plane.findGeoIntersections(ray);
-//        }
-//        return null;
-//    }
+
         List<Point> intersections = plane.findIntersections(ray);
         // if there are no intersections with the plane, there are no intersections with the triangle
         if (intersections == null) {
