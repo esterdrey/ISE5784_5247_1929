@@ -3,6 +3,8 @@ package primitives;
 import java.util.List;
 import geometries.Intersectable.GeoPoint;
 
+import static primitives.Util.isZero;
+
 /**
  * Class Ray is the basic class representing a ray of Euclidean geometry in Cartesian
  * 3-Dimensional coordinate system.
@@ -19,6 +21,9 @@ public class Ray {
      */
     private final Vector direction;
 
+    public static final double DELTA = 0.00001;
+
+
     /**
      * Constructor to initialize Ray based on point and a vector
      *
@@ -31,6 +36,20 @@ public class Ray {
         p1 = point;
     }
 
+
+    /**
+     * New constructor for ray that also receives a normal vector. It then moves the
+     * ray's origin a short distance in the normal's direction.
+     *
+     * @param p0     the original point
+     * @param dir    the direction vector
+     * @param normal the normal along which to move the origin point
+     */
+    public Ray(Point p0, Vector dir, Vector normal) {
+        double res = dir.dotProduct(normal);
+        this.point = isZero(res) ? p0 : res > 0 ? p0.add(normal.scale( 0.00001)) : p0.add(normal.scale(- 0.00001));
+        this.direction = dir.normalize();
+    }
     /**
      * Override equals method
      * @param obj

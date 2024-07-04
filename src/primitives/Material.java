@@ -2,7 +2,7 @@ package primitives;
 
 public class Material {
 
-    public Double3 KD =Double3.ZERO, KS =Double3.ZERO;
+    public Double3 KD =Double3.ZERO, KS =Double3.ZERO,KT=Double3.ZERO,KR=Double3.ZERO;
     public int nShininess=0;
 
     public Material setKD(Double3 KD) {
@@ -30,4 +30,22 @@ public class Material {
         return this;
     }
 
+    public Material setKT(Double3 KT) {
+        this.KT = KT;
+        return this;
+    }
+
+    public Material setKR(Double3 KR) {
+        this.KR = KR;
+        return this;
+    }
+    public Material setKT(double KT) {
+       this.KT =new Double3(KT) ;
+        return this;
+    }
+
+    public Material setKR(double KR) {
+        this.KR = new Double3(KR);
+        return this;
+    }
 }
