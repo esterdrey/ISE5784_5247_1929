@@ -1,6 +1,7 @@
 package geometries;
 
-import primitives.*;
+import primitives.Point;
+import primitives.Ray;
 
 import java.util.List;
 
@@ -9,18 +10,18 @@ import java.util.List;
  * Abstract class Intersectable represents a geometry object that can be
  * intersected by a ray.
  *
- *  @author Ester Drey and Avigail Bash
+ * @author Ester Drey and Avigail Bash
  */
 
-public abstract class Intersectable
-{
+public abstract class Intersectable {
     /**
      * Finds intersection points between the intersectable object and a given ray.
+     *
      * @param ray
      * @return A list of intersection points between the object and the ray. If no
-     *     intersections are found, an empty list is returned.
+     * intersections are found, an empty list is returned.
      */
-    public List<Point> findIntersections(Ray ray){
+    public List<Point> findIntersections(Ray ray) {
         List<GeoPoint> geoList = findGeoIntersections(ray);
         return geoList == null ? null
                 : geoList.stream().map(geoPoint -> geoPoint.point).toList();
@@ -31,6 +32,7 @@ public abstract class Intersectable
     /**
      * Public method findGeoIntersections for finding GeoPoints of intersections
      * between the intersectable object and a given ray.
+     *
      * @param ray
      * @return A list of GeoPoints representing intersection points between the object and the ray.
      */
@@ -39,13 +41,14 @@ public abstract class Intersectable
     }
 
     /**
-     *  Protected method findGeoIntersectionsHelper for finding GeoPoints of
-     *  intersections between the intersectable object and a given ray. This method
-     *  should be implemented in subclasses.
+     * Protected method findGeoIntersectionsHelper for finding GeoPoints of
+     * intersections between the intersectable object and a given ray. This method
+     * should be implemented in subclasses.
+     *
      * @param ray
      * @return A list of GeoPoints representing intersection points between the object and the ray.
      */
-  protected abstract List<GeoPoint> findGeoIntersectionsHelper(Ray ray);
+    protected abstract List<GeoPoint> findGeoIntersectionsHelper(Ray ray);
 
     /**
      * Inner static class GeoPoint representing a geometric intersection point with
@@ -66,17 +69,18 @@ public abstract class Intersectable
 
         /**
          * Constructor for GeoPoint.
+         *
          * @param geo
          * @param point
          */
-        public GeoPoint(Geometry geo, Point point){
-            geometry=geo;
-            this.point=point;
+        public GeoPoint(Geometry geo, Point point) {
+            geometry = geo;
+            this.point = point;
         }
 
 
         /**
-         *   Override equals method
+         * Override equals method
          */
 
         @Override
@@ -87,6 +91,7 @@ public abstract class Intersectable
 
         /**
          * Override toString method
+         *
          * @return the Object
          */
         @Override

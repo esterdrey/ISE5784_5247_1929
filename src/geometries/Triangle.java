@@ -1,5 +1,8 @@
 package geometries;
-import primitives.*;
+
+import primitives.Point;
+import primitives.Ray;
+import primitives.Vector;
 
 import java.util.List;
 
@@ -11,20 +14,24 @@ import static primitives.Util.isZero;
  *
  * @author Ester Drey and Avigail Bash
  */
-public class Triangle  extends Polygon
-{
+public class Triangle extends Polygon {
 
     /**
      * Constructs a Triangle object with three given points.
+     *
      * @param p1 the first point of the triangle
-     * @param p2  the second point of the triangle
+     * @param p2 the second point of the triangle
      * @param p3 the third point of the triangle
      */
-    public Triangle(Point p1, Point p2, Point p3)
-    {
+    public Triangle(Point p1, Point p2, Point p3) {
         super(p1, p2, p3);
     }
 
+
+    /**
+     * @param ray the ray to find intersections with Triangle
+     * @return the list of intersections
+     */
     @Override
     public List<GeoPoint> findGeoIntersectionsHelper(Ray ray) {
 

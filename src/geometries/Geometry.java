@@ -1,7 +1,10 @@
 package geometries;
 
 
-import primitives.*;
+import primitives.Color;
+import primitives.Material;
+import primitives.Point;
+import primitives.Vector;
 
 /**
  * class Geometries is a class representing a set of geometric shapes
@@ -9,14 +12,13 @@ import primitives.*;
  *
  * @author Ester Drey and Avigail Bash
  */
-public abstract class Geometry extends Intersectable
-{
+public abstract class Geometry extends Intersectable {
     /**
      * Field representing the emission color of the geometry.
      */
-    protected Color emission=Color.BLACK;
+    protected Color emission = Color.BLACK;
 
-    private Material material=new Material();
+    private Material material = new Material();
 
 
     /**
@@ -25,9 +27,9 @@ public abstract class Geometry extends Intersectable
     public abstract Vector getNormal(Point point);
 
 
-
     /**
      * Method that returns the emission color of the geometry.
+     *
      * @return the emission color
      */
     public Color getEmission() {
@@ -46,10 +48,22 @@ public abstract class Geometry extends Intersectable
         return this;
     }
 
+
+    /**
+     * Get the material of this object.
+     *
+     * @return the material of this object
+     */
     public Material getMaterial() {
         return material;
     }
 
+    /**
+     * Sets the material of the geometry.
+     *
+     * @param material the material to set
+     * @return the updated geometry with the new material
+     */
     public Geometry setMaterial(Material material) {
         this.material = material;
         return this;

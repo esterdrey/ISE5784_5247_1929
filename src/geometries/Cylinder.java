@@ -2,7 +2,7 @@ package geometries;
 
 import primitives.Point;
 import primitives.Ray;
-import primitives.*;
+import primitives.Vector;
 
 import static primitives.Util.isZero;
 
@@ -13,8 +13,7 @@ import static primitives.Util.isZero;
  * @author Ester Drey and Avigail Bash
  */
 
-public class Cylinder extends Tube
-{
+public class Cylinder extends Tube {
 
     /**
      * height of the tube
@@ -23,24 +22,22 @@ public class Cylinder extends Tube
 
     /**
      * Constructor to initialize Cylinder based on given axis ray, radius, and height
+     *
      * @param radius
      * @param axis
      * @param height
      */
-    public Cylinder(double radius, Ray axis,double height)
-    {
+    public Cylinder(double radius, Ray axis, double height) {
         super(radius, axis);
         this.height = height;
     }
 
     /**
-     *
-     * @param p
-     * @return
+     * @param p the point
+     * @return the normal of the cylinder
      */
     @Override
-    public Vector getNormal(Point p)
-    {
+    public Vector getNormal(Point p) {
         // Check that surface point is different from head of axisRay to avoid creating
         // a zero vector
         Vector dir = axis.getDirection();

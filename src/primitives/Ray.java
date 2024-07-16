@@ -1,7 +1,8 @@
 package primitives;
 
-import java.util.List;
 import geometries.Intersectable.GeoPoint;
+
+import java.util.List;
 
 import static primitives.Util.isZero;
 
@@ -12,6 +13,7 @@ import static primitives.Util.isZero;
  * @author Ester Drey and Avigail Bash
  */
 public class Ray {
+    public static final double DELTA = 0.00001;
     /**
      * starting point of the ray
      */
@@ -20,8 +22,6 @@ public class Ray {
      * direction vector of the ray
      */
     private final Vector direction;
-
-    public static final double DELTA = 0.00001;
 
 
     /**
@@ -47,11 +47,13 @@ public class Ray {
      */
     public Ray(Point p0, Vector dir, Vector normal) {
         double res = dir.dotProduct(normal);
-        this.point = isZero(res) ? p0 : res > 0 ? p0.add(normal.scale( 0.00001)) : p0.add(normal.scale(- 0.00001));
+        this.point = isZero(res) ? p0 : res > 0 ? p0.add(normal.scale(0.00001)) : p0.add(normal.scale(-0.00001));
         this.direction = dir.normalize();
     }
+
     /**
      * Override equals method
+     *
      * @param obj
      * @return object
      */
@@ -64,7 +66,8 @@ public class Ray {
     }
 
     /**
-     *  get point of the ray
+     * get point of the ray
+     *
      * @return the point
      */
     public Point getPoint() {
@@ -73,6 +76,7 @@ public class Ray {
 
     /**
      * return the direction
+     *
      * @return vector
      */
     public Vector getDirection() {
@@ -81,6 +85,7 @@ public class Ray {
 
     /**
      * getter
+     *
      * @param t
      * @return point
      */
@@ -91,6 +96,7 @@ public class Ray {
 
     /**
      * find the closest point to ray's head
+     *
      * @param list
      * @return the closet point
      */

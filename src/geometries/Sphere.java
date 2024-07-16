@@ -1,11 +1,12 @@
 package geometries;
 
-import primitives.*;
+import primitives.Point;
+import primitives.Ray;
+import primitives.Vector;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import static primitives.Util.*;
+import static primitives.Util.alignZero;
 
 /**
  * class Sphere is a class representing a sphere
@@ -41,6 +42,16 @@ public class Sphere extends RadialGeometry {
         return point.subtract(center).normalize();
     }
 
+    public Point getCenter() {
+        return center;
+    }
+
+    /**
+     * Finds the intersections of a given ray with the geometry of the object.
+     *
+     * @param ray the ray to find intersections with
+     * @return a list of GeoPoint objects representing the intersections, or null if there are no intersections
+     */
     @Override
     protected List<GeoPoint> findGeoIntersectionsHelper(Ray ray) {
 

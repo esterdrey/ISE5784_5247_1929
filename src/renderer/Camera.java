@@ -1,11 +1,13 @@
 package renderer;
 
+import primitives.Color;
 import primitives.Point;
-import primitives.*;
+import primitives.Ray;
+import primitives.Vector;
 
 import java.util.MissingResourceException;
 
-import static primitives.Util.*;
+import static primitives.Util.isZero;
 
 
 /**
@@ -44,12 +46,12 @@ public class Camera implements Cloneable {
     /**
      * The width of the view plane.
      */
-    private Double width ;
+    private Double width;
 
     /**
      * The distance from the camera to the view plane.
      */
-    private Double distance ;
+    private Double distance;
     private ImageWriter imageWriter;
     private RayTracerBase rayTracer;
 
@@ -60,6 +62,15 @@ public class Camera implements Cloneable {
         height = 0.0;
         width = 0.0;
         distance = 0.0;
+    }
+
+    /**
+     * Returns a new Builder object for Camera.
+     *
+     * @return a Builder object
+     */
+    public static Builder getBuilder() {
+        return new Builder();
     }
 
     public Double getDistance() {
@@ -82,16 +93,6 @@ public class Camera implements Cloneable {
      */
     public Double getHeight() {
         return height;
-    }
-
-
-    /**
-     * Returns a new Builder object for Camera.
-     *
-     * @return a Builder object
-     */
-    public static Builder getBuilder() {
-        return new Builder();
     }
 
     /**
@@ -121,7 +122,8 @@ public class Camera implements Cloneable {
             Pij = Pij.add(vUp.scale(Yi));
         }
 
-        return new Ray(place, Pij.subtract(place));
+        Vector Vij = Pij.subtract(place);
+        return new Ray(place, Vij);
 
 
     }
@@ -134,9 +136,13 @@ public class Camera implements Cloneable {
      * in closely related classes.
      */
     public Camera renderImage() {
-        for (int i = 0; i < imageWriter.getNy(); i++)
-            for (int j = 0; j < imageWriter.getNx(); j++)
-                castRay(imageWriter.getNx(), imageWriter.getNy(), j, i);
+        int ny = imageWriter.getNy();
+        int nx = imageWriter.getNx();
+
+        for (int i = 0; i < ny; i++) {
+            for (int j = 0; j < nx; j++)
+                castRay(nx, ny, j, i);
+        }
         return this;
     }
 
@@ -177,6 +183,8 @@ public class Camera implements Cloneable {
     public void writeToImage() {
         imageWriter.writeToImage();
     }
+
+
 
     /**
      * Builder class for Camera, implementing the Builder Pattern.

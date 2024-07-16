@@ -1,7 +1,9 @@
 package renderer;
 
-import geometries.*;
-
+import geometries.Geometry;
+import geometries.Plane;
+import geometries.Sphere;
+import geometries.Triangle;
 import org.junit.jupiter.api.Test;
 import primitives.Point;
 import primitives.Ray;
@@ -11,7 +13,7 @@ import scene.Scene;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class IntegrationTest {
     private final Camera.Builder cameraBuilder = Camera.getBuilder()
