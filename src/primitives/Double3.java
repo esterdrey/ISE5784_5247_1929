@@ -148,14 +148,5 @@ public class Double3 {
         return d1 < k && d2 < k && d3 < k;
     }
 
-    /**
-     * Checks whether all the numbers are lower than three numbers in another triad
-     * @param  other other triad
-     * @return true if all the numbers are less that appropriate numbers in
-     *               other
-     *               triad, false otherwise
-     */
-    public boolean lowerThan(Double3 other) {
-        return d1 < other.d1 && d2 < other.d2 && d3 < other.d3;
-    }
+
 }

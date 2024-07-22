@@ -1,8 +1,15 @@
 package lighting;
 
+import geometries.Plane;
 import primitives.Color;
 import primitives.Point;
 import primitives.Vector;
+
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Random;
+
+import static primitives.Util.isZero;
 
 
 /**
@@ -13,6 +20,21 @@ public class PointLight extends Light implements LightSource {
 
     private final Point position;
     private double KC = 1, KL = 0, KQ = 0;
+
+
+    //*****Parameter for Soft shadow
+    /**
+     * The size of the light
+     */
+    private double size = 0;
+    /**
+     * The array of points
+     */
+    protected Point[] points;
+    /**
+     * A random number
+     */
+    private final Random rand = new Random();
 
 
     /**
@@ -41,6 +63,19 @@ public class PointLight extends Light implements LightSource {
     }
 
 
+
+    /**
+     * Sets the size of the array of points
+     * If the given number is a positive number, this will activate SoftShadowing
+     *
+     * @param size Size of the array
+     * @return the Point light with array of point
+     */
+    public PointLight setSize(double size) {
+        this.size = size;
+        return this;
+    }
+
     /**
      * Retrieves the vector from the specified point.
      *
@@ -54,6 +89,7 @@ public class PointLight extends Light implements LightSource {
         return p.subtract(position).normalize();
 
     }
+
 
     /**
      * Sets the constant attenuation factor for the point light.
@@ -99,4 +135,32 @@ public class PointLight extends Light implements LightSource {
     public double getDistance(Point point) {
         return position.distance(point);
     }
+
+    /**
+     * Get the array of points that will cast shadow rays
+     *
+     * @return The array of point
+     */
+    public Point[] getPoints(Point p, int numOfPoints) {
+        if (size == 0) return null;
+        if (this.points != null)
+            return this.points;
+        Point[] points = new Point[numOfPoints];
+        Vector to = p.subtract(position).normalize();
+        Vector vX = to.getOrthogonal().normalize();
+        Vector vY = vX.crossProduct(to).normalize();
+        double x, y, radius;
+        for (int i = 0; i < numOfPoints; i += 4) {
+            radius = rand.nextDouble(size) + 0.1;
+            x = rand.nextDouble(radius) + 0.1;
+            y = radius * radius - x * x;//getCircleScale(x, radius);
+            for (int j = 0; j < 4; j++) {
+                //in this part we mirror the point we got 4 times, to each quarter of the grid
+                points[i + j] = position.add(vX.scale(j % 2 == 0 ? x : -x)).add(vY.scale((j <= 1 ? -y : y)));
+            }
+        }
+        this.points = points;
+        return points;
+    }
+
 }

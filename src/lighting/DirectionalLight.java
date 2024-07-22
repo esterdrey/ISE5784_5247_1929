@@ -4,6 +4,8 @@ import primitives.Color;
 import primitives.Point;
 import primitives.Vector;
 
+import java.util.List;
+
 /**
  * A class representing a directional light source. Inherits from Light and
  * implements LightSource.
@@ -40,8 +42,21 @@ public class DirectionalLight extends Light implements LightSource {
         return direction;
     }
 
+
+
+
+    /**
+     *
+     * @param point The point to which the distance is calculated
+     * @return the distance
+     */
     @Override
     public double getDistance(Point point) {
         return Double.POSITIVE_INFINITY;
     }
+    @Override
+    public Point[] getPoints(Point ignore, int ignOre){
+        return null;
+    }
+
 }

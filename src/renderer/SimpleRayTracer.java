@@ -11,6 +11,7 @@ import static java.awt.Color.BLACK;
 import static primitives.Util.alignZero;
 
 
+
 /**
  * class implements rayTracer abstract class
  *
@@ -23,6 +24,11 @@ public class SimpleRayTracer extends RayTracerBase {
     private static final double MIN_CALC_COLOR_K = 0.001;
     private static final Double3 INITIAL_K = Double3.ONE;
 
+    /**
+     * The max number of points that are in the array (The grid needs to be large enough to render a sharp shadow)
+     */
+    private int numberOfPoints = 80;
+
 
     /**
      * Parameter constructor
@@ -33,11 +39,15 @@ public class SimpleRayTracer extends RayTracerBase {
         super(scene);
     }
 
+
+
     @Override
     public Color traceRay(Ray ray) {
         GeoPoint closestPoint = findClosestIntersection(ray);
         return closestPoint == null ? scene.background : calcColor(closestPoint, ray);
     }
+
+
 
     /**
      * find the closest intersection point between ray and geometries in scene
@@ -58,15 +68,17 @@ public class SimpleRayTracer extends RayTracerBase {
      * calculate the color of a pixel
      *
      * @param geoPoint the {@link GeoPoint} viewed through the pixel to calculate color of
-     * @param ray      ray of camera through pixel in view plane where the point is located
+     * @param ray ray of camera through pixel in view plane where the point is located
      * @return color of the pixel
      */
     private Color calcColor(GeoPoint geoPoint, Ray ray) {
         return calcColor(geoPoint, ray, MAX_CALC_COLOR_LEVEL, INITIAL_K).add(scene.ambientLight.getIntensity());
     }
 
+
+
     private Color calcColor(GeoPoint geoPoint, Ray ray, int level, Double3 k) {
-        Color color = calcLocalEffects(geoPoint, ray);
+        Color color = calcLocalEffects(geoPoint, ray,INITIAL_K);
         return 1 == level ? color : color.add(calcGlobalEffects(geoPoint, ray, level, k));
     }
 
@@ -77,28 +89,64 @@ public class SimpleRayTracer extends RayTracerBase {
      * @param ray The ray being traced.
      * @return The color resulting from the local effects.
      */
-    private Color calcLocalEffects(GeoPoint gp, Ray ray) {
-
+//    private Color calcLocalEffects(GeoPoint gp, Ray ray) {
+//
+//        Vector v = ray.getDirection();
+//        Vector n = gp.geometry.getNormal(gp.point);
+//        double nv = alignZero(n.dotProduct(v));
+//        int nShininess = gp.geometry.getMaterial().nShininess;
+//        Double3 kd = gp.geometry.getMaterial().KD;
+//        Double3 ks = gp.geometry.getMaterial().KS;
+//        Color color = new Color(BLACK).add(gp.geometry.getEmission());
+//        for (LightSource lightSource : scene.lights) {
+//            Vector l = lightSource.getL(gp.point);
+//            double nl = alignZero(n.dotProduct(l));
+//            if ((nl * nv > 0) && !transparency(gp, lightSource, l, n).product(INITIAL_K).lowerThan(MIN_CALC_COLOR_K)) {
+//                Color intensity = lightSource.getIntensity(gp.point).scale(transparency(gp, lightSource, l, n));
+//                color = color.add(calcDiffusive(kd, l, n, intensity), calcSpecular(ks, l, n, v, nShininess, intensity));
+//            }
+//        }
+//        return color;
+//
+//
+//    }
+    private Color calcLocalEffects(GeoPoint gp, Ray ray, Double3 k) {
+        Color color = gp.geometry.getEmission();
         Vector v = ray.getDirection();
         Vector n = gp.geometry.getNormal(gp.point);
         double nv = alignZero(n.dotProduct(v));
-        int nShininess = gp.geometry.getMaterial().nShininess;
-        Double3 kd = gp.geometry.getMaterial().KD;
-        Double3 ks = gp.geometry.getMaterial().KS;
-        Color color = new Color(BLACK).add(gp.geometry.getEmission());
+        if (nv == 0) return color;
+
+        Material material = gp.geometry.getMaterial();
         for (LightSource lightSource : scene.lights) {
-            Vector l = lightSource.getL(gp.point);
+            Vector l = lightSource.getL(gp.point).normalize();
             double nl = alignZero(n.dotProduct(l));
-            if ((nl * nv > 0) && !transparency(gp, lightSource, l, n).product(INITIAL_K).lowerThan(MIN_CALC_COLOR_K)) {
-                Color intensity = lightSource.getIntensity(gp.point).scale(transparency(gp, lightSource, l, n));
-                color = color.add(calcDiffusive(kd, l, n, intensity), calcSpecular(ks, l, n, v, nShininess, intensity));
+            if (nl * nv > 0) { // sign(nl) == sign(nv)
+                Double3 ktr = hitPercentageColor(gp, lightSource, n, l);
+                //Double3 ktr = transparency(gp, lightSource, l, n);
+                if (!ktr.product(k).lowerThan(MIN_CALC_COLOR_K)) {
+                    Color Li = lightSource.getIntensity(gp.point).scale(ktr);
+                    color = color.add(
+                            Li.scale(calcDiffusive(material, nl)),
+                            Li.scale(calcSpecular(material, n, l, nl, v))
+                    );
+                }
             }
         }
         return color;
-
-
     }
 
+
+    /**
+     * Calculates the global effect of a ray (reflection or refraction) by recursively tracing the ray
+     * and combining the colors according to the given coefficients.
+     *
+     * @param ray the ray to trace
+     * @param kx the coefficient for the current effect (reflection or refraction)
+     * @param level the recursion level
+     * @param k the accumulated coefficient from previous levels
+     * @return the color contribution from the global effect
+     */
 
     private Color calcGlobalEffect(Ray ray, Double3 kx, int level, Double3 k) {
 
@@ -112,7 +160,13 @@ public class SimpleRayTracer extends RayTracerBase {
                 : calcColor(gp, ray, level - 1, kkx).scale(kx);
     }
 
-
+    /**
+     * Constructs the reflected ray based on the incident ray, normal vector, and intersection point
+     * @param gp the geometry point of intersection
+     * @param v the direction vector of the incident ray
+     * @param n the normal vector at the intersection point
+     * @return the constructed reflected ray or null if the dot product of n and v is zero
+     */
     private Ray constructReflectedRay(GeoPoint gp, Vector v, Vector n) {
         double nv = n.dotProduct(v);
         if (nv == 0) return null;
@@ -153,46 +207,56 @@ public class SimpleRayTracer extends RayTracerBase {
 
 
     /**
-     * Calculates the specular reflection component for a given material.
+     * Calculate the specular factor
      *
-     * @param ks             The specular reflection coefficient of the material.
-     * @param l              The direction of the light source.
-     * @param n              The surface normal at the point of reflection.
-     * @param v              The direction from the point of reflection towards the viewer.
-     * @param nShininess     The shininess factor of the material.
-     * @param lightIntensity The intensity of the light source.
-     * @return The color resulting from the specular reflection.
+     * @param mat the material of the geometry
+     * @param n   Vector n
+     * @param l   vector l
+     * @param nl  dotProduct of n and l
+     * @param v   Vector v
+     * @return the specular factor
      */
-    private Color calcSpecular(Double3 ks, Vector l, Vector n, Vector v, int nShininess, Color lightIntensity) {
-        Vector r = l.subtract(n.scale(2 * (l.dotProduct(n))));
-        double vrMinus = Math.max(0, v.scale(-1).dotProduct(r));
-        double vrn = Math.pow(vrMinus, nShininess);
-        return lightIntensity.scale(ks.scale(vrn));
+    private Double3 calcSpecular(Material mat, Vector n, Vector l, double nl, Vector v) {
+        Vector r = l.subtract(n.scale(nl * 2));
+        double vr = alignZero(-v.dotProduct(r));
+        if (vr <= 0) return Double3.ZERO;
+        return mat.getKS().scale(Math.pow(vr, mat.nShininess));
     }
 
+//    /**
+//     * Calculates the diffuse reflection component for a given material.
+//     *
+//     * @param kd        The diffuse reflection coefficient of the material.
+//     * @param l         The direction of the light source.
+//     * @param n         The surface normal at the point of reflection.
+//     * @param intensity The intensity of the light source.
+//     * @return The color resulting from the diffuse reflection.
+//     */
+//    private Color calcDiffusive(Double3 kd, Vector l, Vector n, Color intensity) {
+//        double ln = Math.abs(l.dotProduct(n));
+//        return intensity.scale(kd.scale(ln));
+//    }
+
     /**
-     * Calculates the diffuse reflection component for a given material.
+     * Calculate the Diffusive factor
      *
-     * @param kd        The diffuse reflection coefficient of the material.
-     * @param l         The direction of the light source.
-     * @param n         The surface normal at the point of reflection.
-     * @param intensity The intensity of the light source.
-     * @return The color resulting from the diffuse reflection.
+     * @param m  the material
+     * @param nl the dot product between vector n and l
+     * @return the diffusive factor
      */
-    private Color calcDiffusive(Double3 kd, Vector l, Vector n, Color intensity) {
-        double ln = Math.abs(l.dotProduct(n));
-        return intensity.scale(kd.scale(ln));
+    private Double3 calcDiffusive(Material m, double nl) {
+        return m.getKD().scale(nl > 0 ? nl : -nl);
     }
 
     /**
      * Checks if the ray sent from the camera is damaging in any way, if that means there is a shadow
      *
-     * @param geoPoint
-     * @param light
-     * @param l
-     * @param n
-     * @param nl
-     * @return
+     * @param geoPoint the geometry point being checked
+     * @param light the light source
+     * @param l vector from the geometry point towards the light source
+     * @param n the normal vector at the geometry point
+     * @param nl dot product of the normal vector and the direction vector
+     * @return true if there is no shadow, false otherwise
      */
     private boolean unshaded(GeoPoint geoPoint, LightSource light, Vector l, Vector n, double nl) {
         Vector lightDirection = l.scale(-1); // from point to light source
@@ -215,11 +279,11 @@ public class SimpleRayTracer extends RayTracerBase {
      * Calculates the transparency coefficient for a given geometry point, light
      * source, light direction vector, and normal vector.
      *
-     * @param geoPoint
-     * @param ls
-     * @param l
-     * @param n
-     * @return
+     * @param geoPoint the geometry point being checked
+     * @param ls the light source
+     * @param l the direction vector from the geometry point towards the light source
+     * @param n the normal vector at the geometry point
+     * @return the transparency coefficient (Double3)
      */
     private Double3 transparency(GeoPoint geoPoint, LightSource ls, Vector l, Vector n) {
         Vector lDir = l.scale(-1);
@@ -239,5 +303,30 @@ public class SimpleRayTracer extends RayTracerBase {
             }
         }
         return ktr;
+    }
+
+    /**
+     * Calculates the percentage of rays that hit the object,
+     * from all the rays that were created by the points of hte light source.
+     *
+     * @param ls       the light source.
+     * @param geoPoint the intersection point.
+     * @return the percentage of rays that are heat by some object.
+     */
+    private Double3 hitPercentageColor( GeoPoint geoPoint,LightSource ls, Vector n, Vector l) {
+        Double3 average = Double3.ZERO;
+        Point[] points = ls.getPoints(geoPoint.point, numberOfPoints);
+        if (points == null)
+            return transparency(geoPoint, ls, l, n);
+        for (Point point : points) {
+            average = average.add(transparency(geoPoint,ls, geoPoint.point.subtract(point).normalize(), n ).reduce(points.length));
+        }
+        return average;
+    }
+
+
+    public SimpleRayTracer setNumberOfPoints(int numberOfPoints) {
+        this.numberOfPoints = numberOfPoints;
+        return this;
     }
 }

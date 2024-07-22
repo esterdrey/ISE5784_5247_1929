@@ -5,8 +5,12 @@ import primitives.Point;
 import primitives.Ray;
 import primitives.Vector;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.MissingResourceException;
 
+import static primitives.Util.alignZero;
 import static primitives.Util.isZero;
 
 
@@ -54,6 +58,12 @@ public class Camera implements Cloneable {
     private Double distance;
     private ImageWriter imageWriter;
     private RayTracerBase rayTracer;
+
+    private int numberOfRays = 1;
+
+    public int getNumberOfRays() {
+        return numberOfRays;
+    }
 
     /**
      * Private constructor
@@ -129,20 +139,102 @@ public class Camera implements Cloneable {
     }
 
     /**
+     * Constructs a list of rays originating from the camera's location and passing through the specified pixel.
+     * The pixel is divided into grid.
+     *
+     * @param nX The number of pixels in the x-axis of the view plane grid.
+     * @param nY The number of pixels in the y-axis of the view plane grid.
+     * @param j  The index of the pixel in the x-axis of the grid.
+     * @param i  The index of the pixel in the y-axis of the grid.
+     * @return A list of rays passing through the specified pixel, divided into segments.
+     */
+    public List<Ray> constructRays(int nX, int nY, int j, int i) {
+        Point pIJ = getCenterOfPixel(nX, nY, j, i);
+
+        List<Ray> rays = new LinkedList<>();
+        double rY = height / nY; // גובה של פיקסל
+        double rX = width / nX;  // רוחב של פיקסל
+        double sRY = rY / numberOfRays; // גובה של סגמנט
+        double sRX = rX / numberOfRays; // רוחב של סגמנט
+
+        for (int si = 0; si < numberOfRays; si++) {
+            for (int sj = 0; sj < numberOfRays; sj++) {
+                Point sPIJ = pIJ;
+                double sYI = -(si - (numberOfRays - 1) / 2d) * sRY;
+                double sXJ = (sj - (numberOfRays - 1) / 2d) * sRX;
+
+                if (!isZero(sXJ))
+                    sPIJ = sPIJ.add(vRight.scale(sXJ));
+                if (!isZero(sYI))
+                    sPIJ = sPIJ.add(vUp.scale(sYI));
+
+                rays.add(new Ray(place, sPIJ.subtract(place)));
+            }
+        }
+
+        return rays;
+    }
+
+
+    /**
+     * Calculates the center coordinates of a pixel on the view plane, given its position in the grid and the indices of the pixel.
+     *
+     * @param nX The number of pixels in the x-axis of the view plane grid.
+     * @param nY The number of pixels in the y-axis of the view plane grid.
+     * @param j  The index of the pixel in the x-axis of the grid.
+     * @param i  The index of the pixel in the y-axis of the grid.
+     * @return The center coordinates of the specified pixel as a Point.
+     */
+    private Point getCenterOfPixel(int nX, int nY, double j, double i) {
+        // calculate the ratio of the pixel by the height and by the width of the view plane
+        // the ratio Ry = h/Ny, the height of the pixel
+        double rY = alignZero(height / nY);
+        // the ratio Rx = w/Nx, the width of the pixel
+        double rX = alignZero(width / nX);
+
+        // Xj = (j - (Nx -1)/2) * Rx
+        double xJ = alignZero((j - ((nX - 1d) / 2d)) * rX);
+        // Yi = -(i - (Ny - 1)/2) * Ry
+        double yI = alignZero(-(i - ((nY - 1d) / 2d)) * rY);
+
+        Point pIJ = this.place.add(vTo.scale(this.distance));
+
+        if (!isZero(xJ)) {
+            pIJ = pIJ.add(vRight.scale(xJ));
+        }
+        if (!isZero(yI)) {
+            pIJ = pIJ.add(vUp.scale(yI));
+        }
+        return pIJ;
+    }
+
+
+
+    /**
      * This method performs image rendering by casting rays of light for each pixel
      * in the image and computing their color.
      *
      * @return The current state of the camera, for further use within this class or
      * in closely related classes.
      */
+
     public Camera renderImage() {
         int ny = imageWriter.getNy();
         int nx = imageWriter.getNx();
 
-        for (int i = 0; i < ny; i++) {
-            for (int j = 0; j < nx; j++)
-                castRay(nx, ny, j, i);
+        if (numberOfRays == 1) {
+            for (int i = 0; i < ny; i++) {
+                for (int j = 0; j < nx; j++)
+                    castRay(nx, ny, j, i);
+            }
+        } else {
+            for (int i = 0; i < ny; i++) {
+                for (int j = 0; j < nx; j++) {
+                    castRays(nx, ny, j, i);
+                }
+            }
         }
+
         return this;
     }
 
@@ -158,6 +250,30 @@ public class Camera implements Cloneable {
         Ray ray = constructRay(nX, nY, j, i);
         Color color = rayTracer.traceRay(ray);
         imageWriter.writePixel(j, i, color);
+    }
+
+    /**
+     * Casts multiple rays through the specified pixel to compute the color by tracing each ray and performing anti-aliasing.
+     *
+     * @param nX The number of pixels in the x-axis of the view plane grid.
+     * @param nY The number of pixels in the y-axis of the view plane grid.
+     * @param j  The index of the pixel in the x-axis of the grid.
+     * @param i  The index of the pixel in the y-axis of the grid.
+     * @return The computed color for the pixel after casting rays and performing anti-aliasing.
+     */
+
+
+    public Color castRays(int nX, int nY, int j, int i) {
+        List<Ray> rays = constructRays(nX, nY, j, i);
+        Color color = Color.BLACK;
+
+        for (Ray ray : rays)
+            color = color.add(rayTracer.traceRay(ray));
+
+        color = color.reduce(rays.size());
+        imageWriter.writePixel(j, i, color);  // וודא שהצבע נכתב לפיקסל
+
+        return color;
     }
 
     /**
@@ -195,6 +311,7 @@ public class Camera implements Cloneable {
          * Represents a builder for constructing Camera objects.
          */
         private final Camera camera = new Camera();
+
 
         /**
          * Sets the position of the camera.
@@ -254,6 +371,17 @@ public class Camera implements Cloneable {
 
         public Builder setRayTracerBase(RayTracerBase rayTracerBase) {
             camera.rayTracer = rayTracerBase;
+            return this;
+        }
+
+        /**
+         * Sets the parameter that represent weather to improve the picture whit anti analyzing or not
+         * default is false
+         */
+        public Builder setNumberOfRays(int numberOfRays) {
+            if (numberOfRays < 1)
+                throw new IllegalArgumentException("The number of rays must be >= 1");
+            camera.numberOfRays = numberOfRays;
             return this;
         }
 

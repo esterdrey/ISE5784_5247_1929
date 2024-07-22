@@ -91,4 +91,8 @@ public class Scene {
         this.lights = lights;
         return this;
     }
+
+    public List<LightSource> getLights() {
+        return lights;
+    }
 }

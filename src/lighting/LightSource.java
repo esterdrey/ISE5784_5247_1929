@@ -4,12 +4,16 @@ import primitives.Color;
 import primitives.Point;
 import primitives.Vector;
 
+import java.util.List;
+
 
 /**
  * Interface representing a light source in a scene. A light source has
  * properties to determine its intensity and direction.
  */
 public interface LightSource {
+
+
 
     /**
      * Returns the intensity (color) of the light source at a given point in the scene.
@@ -27,6 +31,8 @@ public interface LightSource {
      */
     public Vector getL(Point p);
 
+
+
     /**
      * Computes the distance from the light source to a given point.
      *
@@ -34,6 +40,9 @@ public interface LightSource {
      * @return The distance from the light source to the point.
      */
     public double getDistance(Point point);
+
+
+    Point[] getPoints(Point p, int numOfPoints);
 
 
 }

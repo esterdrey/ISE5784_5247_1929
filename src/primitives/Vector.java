@@ -114,4 +114,15 @@ public class Vector extends Point {
                 && this.xyz.equals(other.xyz);
     }
 
+
+    /**
+     * Return an orthogonal vector to a given vector
+     *
+     * @return An orthogonal vector to the given Vector
+     */
+    public Vector getOrthogonal() {
+        return xyz.d1 == 0 ? new Vector(1, 0, 0): new Vector(-xyz.d2, xyz.d1, 0);
+    }
+
+
 }
