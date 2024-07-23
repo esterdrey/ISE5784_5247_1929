@@ -16,7 +16,7 @@ public class stage8After {
             .setLocation(new Point(0, 0, 1000))
             .setVpDistance(1000)
             .setVpSize(200, 200)
-            .setRayTracer(new SimpleRayTracer(scene).setNumberOfPoints(50)).setNumberOfRays(50);
+            .setRayTracer(new SimpleRayTracer(scene).setNumberOfPoints(50)).setNumberOfRays(10);
 
 
 
@@ -38,7 +38,7 @@ public class stage8After {
         Material sunMaterial = new Material().setKD(0.5).setKS(0.5).setnShininess(100);
         sun.setEmission(new Color(255, 69, 0)).setMaterial(sunMaterial); // כתום זורח
 
-        addSunFlames(sunCenter, sunRadius);
+//        addSunFlames(sunCenter, sunRadius);
 
         // הוספת תאורה שתבוא על השמש ותאיר אותה ואת הסביבה
         Vector[] lightDirections = {

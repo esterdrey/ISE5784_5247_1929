@@ -59,6 +59,10 @@ public class Camera implements Cloneable {
     private ImageWriter imageWriter;
     private RayTracerBase rayTracer;
 
+    private boolean adaptive = false;
+    private int threadsCount = 1;
+
+
     private int numberOfRays = 1;
 
     public int getNumberOfRays() {
@@ -103,6 +107,31 @@ public class Camera implements Cloneable {
      */
     public Double getHeight() {
         return height;
+    }
+
+    /**
+     * set the adaptive
+     * @param  adaptive
+     * @return the Camera object
+     */
+    public Camera setadaptive(boolean adaptive) {
+        this.adaptive = adaptive;
+        return this;
+    }
+
+    /**
+     * set the threadsCount
+     * @param threadsCount
+     * @return the Camera object
+     */
+    public Camera setMultiThreading(int threadsCount) {
+        this.threadsCount = threadsCount;
+        return this;
+
+    }
+
+    public Point getPlace() {
+        return place;
     }
 
     /**
@@ -210,32 +239,110 @@ public class Camera implements Cloneable {
 
 
 
+//    /**
+//     * This method performs image rendering by casting rays of light for each pixel
+//     * in the image and computing their color.
+//     *
+//     * @return The current state of the camera, for further use within this class or
+//     * in closely related classes.
+//     */
+//
+//    public Camera renderImage() {
+//        int ny = imageWriter.getNy();
+//        int nx = imageWriter.getNx();
+//
+//        if (numberOfRays == 1) {
+//            for (int i = 0; i < ny; i++) {
+//                for (int j = 0; j < nx; j++)
+//                    castRay(nx, ny, j, i);
+//            }
+//        } else {
+//            for (int i = 0; i < ny; i++) {
+//                for (int j = 0; j < nx; j++) {
+//                    castRays(nx, ny, j, i);
+//                }
+//            }
+//        }
+//
+//        return this;
+//    }
+
     /**
-     * This method performs image rendering by casting rays of light for each pixel
-     * in the image and computing their color.
-     *
-     * @return The current state of the camera, for further use within this class or
-     * in closely related classes.
+     * Checks that all fields are full and creates an image
+     * @return the Camera object
      */
-
     public Camera renderImage() {
-        int ny = imageWriter.getNy();
-        int nx = imageWriter.getNx();
-
-        if (numberOfRays == 1) {
-            for (int i = 0; i < ny; i++) {
-                for (int j = 0; j < nx; j++)
-                    castRay(nx, ny, j, i);
-            }
-        } else {
-            for (int i = 0; i < ny; i++) {
-                for (int j = 0; j < nx; j++) {
-                    castRays(nx, ny, j, i);
-                }
-            }
+        //If one of the fields of the camera is wrong
+        if (place == null || vRight == null
+                || vUp == null || vTo == null || distance == 0
+                || width == 0 || height == 0 || place.add(vTo.scale(this.distance)) == null
+                || imageWriter == null || rayTracer == null) {
+            throw new MissingResourceException("Missing camera data", Camera.class.getName(), null);
         }
+        //initialize of the pixel
+        Pixel.initialize(imageWriter.getNy(), imageWriter.getNx(), 1);
 
+        //if there is no antialiasing
+        if (numberOfRays == 1) {
+            //over all the threads
+            while (threadsCount-- > 0) {
+                new Thread(() -> {
+                    //over all the pixels ant print its
+                    for (Pixel pixel = new Pixel(); pixel.nextPixel(); Pixel.pixelDone())
+                        imageWriter.writePixel(pixel.col, pixel.row, rayTracer.traceRays(constructRays(imageWriter.getNx(),
+                                imageWriter.getNy(), pixel.col, pixel.row)));
+                }).start();
+            }
+            //wait to all the pixel finish
+            Pixel.waitToFinish();
+        }
+        //if there is antialiasing
+        else {
+            //over all the threads
+            while (threadsCount-- > 0) {
+                new Thread(() -> {
+                    //over all the pixels ant print its
+                    for (Pixel pixel = new Pixel(); pixel.nextPixel(); Pixel.pixelDone())
+                        imageWriter.writePixel(pixel.col, pixel.row, SuperSampling(imageWriter.getNx(),
+                                imageWriter.getNy(), pixel.col, pixel.row, numberOfRays, adaptive));
+                }).start();
+            }
+            Pixel.waitToFinish();
+        }
         return this;
+    }
+
+    /**
+     Calculates the color of the pixel using a beam of rays in an adaptive or regular method
+     * @param nX amount of pixels by length
+     * @param nY amount of pixels by width
+     * @param j The position of the pixel relative to the y-axis
+     * @param i The position of the pixel relative to the x-axis
+     * @param numOfRays The amount of rays sent
+     * @return Pixel color
+     */
+    private Color SuperSampling(int nX, int nY, int j, int i, int numOfRays, boolean adaptiveAlising)  {
+        Vector Vright = vRight;
+        Vector Vup = vUp;
+        Point cameraLoc = this.getPlace();
+        int numOfRaysInRowCol = (int)Math.floor(Math.sqrt(numOfRays));
+        if(numOfRaysInRowCol == 1)
+            return rayTracer.traceRay(constructRay(nX, nY, j, i));
+
+        Point pIJ = getCenterOfPixel(nX, nY, j, i);
+
+        //the size of sub pixel
+        double rY = alignZero(height / nY);
+        double rX = alignZero(width / nX);
+
+        double PRy = rY/numOfRaysInRowCol;
+        double PRx = rX/numOfRaysInRowCol;
+        //if antialiasing is adaptive
+        if (adaptiveAlising)
+            return rayTracer.AdaptiveSuperSamplingRec(pIJ, rX, rY, PRx, PRy,cameraLoc,Vright, Vup,null);
+            //if antialiasing is not adaptive
+        else
+            return rayTracer.RegularSuperSampling(pIJ, rX, rY, PRx, PRy,cameraLoc,Vright, Vup,null);
     }
 
     /**

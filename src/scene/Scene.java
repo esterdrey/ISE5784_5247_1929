@@ -92,6 +92,10 @@ public class Scene {
         return this;
     }
 
+    public Color getBackground() {
+        return background;
+    }
+
     public List<LightSource> getLights() {
         return lights;
     }

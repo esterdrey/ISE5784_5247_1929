@@ -5,7 +5,10 @@ import lighting.LightSource;
 import primitives.*;
 import scene.Scene;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 
 import static java.awt.Color.BLACK;
 import static primitives.Util.alignZero;
@@ -45,6 +48,27 @@ public class SimpleRayTracer extends RayTracerBase {
     public Color traceRay(Ray ray) {
         GeoPoint closestPoint = findClosestIntersection(ray);
         return closestPoint == null ? scene.background : calcColor(closestPoint, ray);
+    }
+
+    /**
+     * Trace the list of ray and calculates the color of the point that interact with the geometries of the scene
+     *
+     * @param rays the ray that came out of the camera
+     * @return the color of the object that the ray is interact with
+     */
+    @Override
+    public Color traceRays(List<Ray> rays) {
+        Color color = new Color(BLACK);
+        //over all the rays
+        for (Ray ray : rays) {
+            GeoPoint clossestGeoPoint = findClosestIntersection(ray);
+            //if there is no closest intersection point with the shape
+            if (clossestGeoPoint == null)
+                color = color.add(scene.getBackground());
+                //if there is intersection point
+            else color = color.add(calcColor(clossestGeoPoint, ray));
+        }
+        return color.reduce(rays.size());
     }
 
 
@@ -328,5 +352,151 @@ public class SimpleRayTracer extends RayTracerBase {
     public SimpleRayTracer setNumberOfPoints(int numberOfPoints) {
         this.numberOfPoints = numberOfPoints;
         return this;
+    }
+
+    /**
+     * Checks the color of the pixel with the help of individual rays and averages between
+     * them and only if necessary continues to send beams of rays in recursion
+     * (credit to Rivki&Efrat)
+     * @param centerP   center pixel
+     * @param Width     Length
+     * @param Height    width
+     * @param minWidth  min Width
+     * @param minHeight min Height
+     * @param cameraLoc Camera location
+     * @param Vright    Vector right
+     * @param Vup       vector up
+     * @param prePoints pre Points
+     * @return Pixel color
+     */
+    @Override
+    public Color AdaptiveSuperSamplingRec(Point centerP, double Width, double Height, double minWidth, double minHeight,
+                                          Point cameraLoc, Vector Vright, Vector Vup, List<Point> prePoints) {
+        //check if the
+        if (Width < minWidth * 2 || Height < minHeight * 2) {
+            return this.traceRay(new Ray(cameraLoc, centerP.subtract(cameraLoc)));
+        }
+
+        //initialize list of following subpixel center points
+        List<Point> nextCenterPList = new LinkedList<>();
+        //initialize list of corners points
+        List<Point> cornersList = new LinkedList<>();
+        //initialize list of colors
+        List<primitives.Color> colorList = new LinkedList<>();
+        Point tempCorner;
+        Ray tempRay;
+
+        //over about all four corners
+        for (int i = -1; i <= 1; i += 2) {
+            for (int j = -1; j <= 1; j += 2) {
+                //calculate the corner place
+                tempCorner = centerP.add(Vright.scale(i * Width / 2)).add(Vup.scale(j * Height / 2));
+                //add this corner to list of corners
+                cornersList.add(tempCorner);
+                //if this point is empty or does not exist
+                if (prePoints == null || !isInList(prePoints, tempCorner)) {
+                    //add the corner point and its color
+                    tempRay = new Ray(cameraLoc, tempCorner.subtract(cameraLoc));
+                    nextCenterPList.add(centerP.add(Vright.scale(i * Width / 4)).add(Vup.scale(j * Height / 4)));
+                    colorList.add(traceRay(tempRay));
+                }
+            }
+        }
+
+        //if not all colors are equal
+        if (nextCenterPList == null || nextCenterPList.size() == 0) {
+            return primitives.Color.BLACK;
+        }
+
+        boolean isAllEquals = true;
+        primitives.Color tempColor = colorList.get(0);
+        //over all the point in colorList
+        for (primitives.Color color : colorList) {
+            //if all the colors almost equals
+            if (!tempColor.isAlmostEquals(color))
+                isAllEquals = false;
+        }
+        //if all the colors does not equals ant there are some color
+        if (isAllEquals && colorList.size() > 1)
+            return tempColor;
+
+
+        tempColor = primitives.Color.BLACK;
+        //over about all the corner points
+        for (Point center : nextCenterPList) {
+            //recursive call to AdaptiveSuperSamplingRec
+            tempColor = tempColor.add(AdaptiveSuperSamplingRec(center, Width / 2, Height / 2,
+                    minWidth, minHeight, cameraLoc, Vright, Vup, cornersList));
+        }
+        //return the average color
+        return tempColor.reduce(nextCenterPList.size());
+    }
+
+    public Color RegularSuperSampling(Point centerP, double Width, double Height, double minWidth, double minHeight,
+                                      Point cameraLoc, Vector Right, Vector Vup, List<Point> prePoints) {
+        //initialize list of colors
+        List<Color> colorList = new ArrayList<>();
+
+        //calculate num of sub pixels
+        int numSubPixelsX = (int) Math.ceil(Width / minWidth);
+        int numSubPixelsY = (int) Math.ceil(Height / minHeight);
+
+        //initialize random number
+        Random random = new Random();
+
+        //over all the sub pixels
+        for (int i = 0; i < numSubPixelsY; i++) {
+            for (int j = 0; j < numSubPixelsX; j++) {
+                //calculate the coordinates of the place of this subpixel
+                double offsetX = minWidth * j;
+                double offsetY = minHeight * i;
+
+                //calculate a random point in this subpixel
+                double randomX = offsetX + random.nextDouble() * minWidth;
+                double randomY = offsetY + random.nextDouble() * minHeight;
+
+                //calculate the place of this subpixel
+                Point subPixelPoint = centerP.add(Right.scale(randomX - Width / 2)).add(Vup.scale(randomY - Height / 2));
+
+                //if this point is empty or does not exist
+                if (prePoints == null || !isInList(prePoints, subPixelPoint)) {
+                    //build ray from  camera to subpixel
+                    Ray ray = new Ray(cameraLoc, subPixelPoint.subtract(cameraLoc));
+                    colorList.add(traceRay(ray));
+                }
+            }
+        }
+
+        //if no colors are received
+        if (colorList.isEmpty()) {
+            //initialize black color
+            return primitives.Color.BLACK;
+        }
+
+        Color averageColor = Color.BLACK;
+        //over about all the colorList
+        for (Color color : colorList) {
+            //calculate the average color
+            averageColor = averageColor.add(color);
+        }
+        //return the average color
+        return averageColor.reduce(colorList.size());
+    }
+
+    /**
+     * Find a point in the list
+     *
+     * @param pointsList the list
+     * @param point      the point that we look for
+     * @return
+     */
+    private boolean isInList(List<Point> pointsList, Point point) {
+        //over about all the list of the points
+        for (Point tempPoint : pointsList) {
+            //if point == desired point
+            if (point.equals(tempPoint))
+                return true;
+        }
+        return false;
     }
 }
