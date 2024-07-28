@@ -74,10 +74,21 @@ public class Point {
         return Math.sqrt(distanceSquared(p1));
     }
 
+
+    /**
+     * Returns the XYZ coordinates of the point.
+     * @return The XYZ coordinates of the point as a Double3 object.
+     */
     public Double3 getXyz() {
         return xyz;
     }
 
+
+    /**
+     * Compares the current object with another object for equality.
+     * @param obj The object to compare with.
+     * @return true if the current object is the same as the given object, or if they are both Points and their coordinates are equal; false otherwise.
+     */
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;

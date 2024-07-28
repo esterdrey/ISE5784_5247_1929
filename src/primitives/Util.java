@@ -3,7 +3,7 @@ package primitives;
 /**
  * Util class is used for some internal utilities, e.g. controlling accuracy
  *
- * @author Dan
+ * @author Ester and Avigail
  */
 public final class Util {
     /**

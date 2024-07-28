@@ -92,10 +92,21 @@ public class Scene {
         return this;
     }
 
+
+    /**
+     * Returns the background color of the scene.
+     *
+     * @return The background color of the scene.
+     */
     public Color getBackground() {
         return background;
     }
 
+    /**
+     * Returns the list of light sources in the scene.
+     *
+     * @return The list of light sources.
+     */
     public List<LightSource> getLights() {
         return lights;
     }

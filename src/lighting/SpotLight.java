@@ -100,7 +100,12 @@ public class SpotLight extends PointLight {
         return this;
     }
 
-
+    /**
+     *Returns an array of points based on the provided point and number of points.
+      * @param p The starting point for generating the array of points.
+      * @param numOfPoints The number of points to generate.
+     * @return An array of points generated based on the input parameters.
+     */
     @Override
     public Point[] getPoints(Point p, int numOfPoints) {
         return super.getPoints(p.add(direction), numOfPoints);

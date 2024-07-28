@@ -4,8 +4,6 @@ import primitives.Color;
 import primitives.Point;
 import primitives.Ray;
 import primitives.Vector;
-
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.MissingResourceException;
@@ -61,13 +59,8 @@ public class Camera implements Cloneable {
 
     private boolean adaptive = false;
     private int threadsCount = 1;
-
-
     private int numberOfRays = 1;
 
-    public int getNumberOfRays() {
-        return numberOfRays;
-    }
 
     /**
      * Private constructor
@@ -87,48 +80,6 @@ public class Camera implements Cloneable {
         return new Builder();
     }
 
-    public Double getDistance() {
-        return distance;
-    }
-
-    /**
-     * Retrieves the width of the view plane.
-     *
-     * @return The width of the view plane.
-     */
-    public Double getWidth() {
-        return width;
-    }
-
-    /**
-     * Retrieves the height of the view plane.
-     *
-     * @return The height of the view plane.
-     */
-    public Double getHeight() {
-        return height;
-    }
-
-    /**
-     * set the adaptive
-     * @param  adaptive
-     * @return the Camera object
-     */
-    public Camera setadaptive(boolean adaptive) {
-        this.adaptive = adaptive;
-        return this;
-    }
-
-    /**
-     * set the threadsCount
-     * @param threadsCount
-     * @return the Camera object
-     */
-    public Camera setMultiThreading(int threadsCount) {
-        this.threadsCount = threadsCount;
-        return this;
-
-    }
 
     public Point getPlace() {
         return place;
@@ -181,10 +132,10 @@ public class Camera implements Cloneable {
         Point pIJ = getCenterOfPixel(nX, nY, j, i);
 
         List<Ray> rays = new LinkedList<>();
-        double rY = height / nY; // גובה של פיקסל
-        double rX = width / nX;  // רוחב של פיקסל
-        double sRY = rY / numberOfRays; // גובה של סגמנט
-        double sRX = rX / numberOfRays; // רוחב של סגמנט
+        double rY = height / nY;
+        double rX = width / nX;
+        double sRY = rY / numberOfRays;
+        double sRX = rX / numberOfRays;
 
         for (int si = 0; si < numberOfRays; si++) {
             for (int sj = 0; sj < numberOfRays; sj++) {
@@ -238,34 +189,6 @@ public class Camera implements Cloneable {
     }
 
 
-
-//    /**
-//     * This method performs image rendering by casting rays of light for each pixel
-//     * in the image and computing their color.
-//     *
-//     * @return The current state of the camera, for further use within this class or
-//     * in closely related classes.
-//     */
-//
-//    public Camera renderImage() {
-//        int ny = imageWriter.getNy();
-//        int nx = imageWriter.getNx();
-//
-//        if (numberOfRays == 1) {
-//            for (int i = 0; i < ny; i++) {
-//                for (int j = 0; j < nx; j++)
-//                    castRay(nx, ny, j, i);
-//            }
-//        } else {
-//            for (int i = 0; i < ny; i++) {
-//                for (int j = 0; j < nx; j++) {
-//                    castRays(nx, ny, j, i);
-//                }
-//            }
-//        }
-//
-//        return this;
-//    }
 
     /**
      * Checks that all fields are full and creates an image
@@ -491,6 +414,25 @@ public class Camera implements Cloneable {
             camera.numberOfRays = numberOfRays;
             return this;
         }
+        /**
+         * set the adaptive
+         * @param  adaptive
+         * @return the Camera object
+         */
+        public Builder setadaptive(boolean adaptive) {
+            camera.adaptive = adaptive;
+            return this;
+        }
+        /**
+         * set the threadsCount
+         * @param threadsCount
+         * @return the Camera object
+         */
+        public Builder setMultiThreading(int threadsCount) {
+            camera.threadsCount = threadsCount;
+            return this;
+
+        }
 
         /**
          * Sets the ray tracer base used by the camera to trace rays and render the scene.
@@ -502,6 +444,7 @@ public class Camera implements Cloneable {
             camera.rayTracer = simpleRayTracer;
             return this;
         }
+
 
         /**
          * Sets the image writer used by the camera to write the rendered image.

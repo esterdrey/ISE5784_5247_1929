@@ -10,7 +10,7 @@ import static primitives.Util.isZero;
 /**
  * Test program for the 1st stage
  *
- * @author Dan Zilberstein
+ * @author Ester and Avigail
  */
 public final class Main {
 

@@ -43,7 +43,11 @@ public class SimpleRayTracer extends RayTracerBase {
     }
 
 
-
+    /**
+     *
+     * @param ray The ray to be traced.
+     * @return the color
+     */
     @Override
     public Color traceRay(Ray ray) {
         GeoPoint closestPoint = findClosestIntersection(ray);
@@ -113,27 +117,7 @@ public class SimpleRayTracer extends RayTracerBase {
      * @param ray The ray being traced.
      * @return The color resulting from the local effects.
      */
-//    private Color calcLocalEffects(GeoPoint gp, Ray ray) {
-//
-//        Vector v = ray.getDirection();
-//        Vector n = gp.geometry.getNormal(gp.point);
-//        double nv = alignZero(n.dotProduct(v));
-//        int nShininess = gp.geometry.getMaterial().nShininess;
-//        Double3 kd = gp.geometry.getMaterial().KD;
-//        Double3 ks = gp.geometry.getMaterial().KS;
-//        Color color = new Color(BLACK).add(gp.geometry.getEmission());
-//        for (LightSource lightSource : scene.lights) {
-//            Vector l = lightSource.getL(gp.point);
-//            double nl = alignZero(n.dotProduct(l));
-//            if ((nl * nv > 0) && !transparency(gp, lightSource, l, n).product(INITIAL_K).lowerThan(MIN_CALC_COLOR_K)) {
-//                Color intensity = lightSource.getIntensity(gp.point).scale(transparency(gp, lightSource, l, n));
-//                color = color.add(calcDiffusive(kd, l, n, intensity), calcSpecular(ks, l, n, v, nShininess, intensity));
-//            }
-//        }
-//        return color;
-//
-//
-//    }
+
     private Color calcLocalEffects(GeoPoint gp, Ray ray, Double3 k) {
         Color color = gp.geometry.getEmission();
         Vector v = ray.getDirection();
@@ -145,9 +129,8 @@ public class SimpleRayTracer extends RayTracerBase {
         for (LightSource lightSource : scene.lights) {
             Vector l = lightSource.getL(gp.point).normalize();
             double nl = alignZero(n.dotProduct(l));
-            if (nl * nv > 0) { // sign(nl) == sign(nv)
+            if (nl * nv > 0) {
                 Double3 ktr = hitPercentageColor(gp, lightSource, n, l);
-                //Double3 ktr = transparency(gp, lightSource, l, n);
                 if (!ktr.product(k).lowerThan(MIN_CALC_COLOR_K)) {
                     Color Li = lightSource.getIntensity(gp.point).scale(ktr);
                     color = color.add(
@@ -247,19 +230,7 @@ public class SimpleRayTracer extends RayTracerBase {
         return mat.getKS().scale(Math.pow(vr, mat.nShininess));
     }
 
-//    /**
-//     * Calculates the diffuse reflection component for a given material.
-//     *
-//     * @param kd        The diffuse reflection coefficient of the material.
-//     * @param l         The direction of the light source.
-//     * @param n         The surface normal at the point of reflection.
-//     * @param intensity The intensity of the light source.
-//     * @return The color resulting from the diffuse reflection.
-//     */
-//    private Color calcDiffusive(Double3 kd, Vector l, Vector n, Color intensity) {
-//        double ln = Math.abs(l.dotProduct(n));
-//        return intensity.scale(kd.scale(ln));
-//    }
+
 
     /**
      * Calculate the Diffusive factor
@@ -372,7 +343,7 @@ public class SimpleRayTracer extends RayTracerBase {
     @Override
     public Color AdaptiveSuperSamplingRec(Point centerP, double Width, double Height, double minWidth, double minHeight,
                                           Point cameraLoc, Vector Vright, Vector Vup, List<Point> prePoints) {
-        //check if the
+
         if (Width < minWidth * 2 || Height < minHeight * 2) {
             return this.traceRay(new Ray(cameraLoc, centerP.subtract(cameraLoc)));
         }

@@ -54,6 +54,14 @@ public class DirectionalLight extends Light implements LightSource {
     public double getDistance(Point point) {
         return Double.POSITIVE_INFINITY;
     }
+
+    /**
+     * Returns an array of points based on the provided input.
+     *
+     * @param ignore A point to be ignored in the calculations.
+     * @param ignOre An integer parameter that might be used for processing.
+     * @return An array of points based on the input parameters.
+     */
     @Override
     public Point[] getPoints(Point ignore, int ignOre){
         return null;

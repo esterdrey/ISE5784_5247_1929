@@ -60,6 +60,7 @@ public abstract class RayTracerBase {
      */
 
     public abstract Color AdaptiveSuperSamplingRec(Point centerP, double Width, double Height, double minWidth, double minHeight, Point cameraLoc, Vector Vright, Vector Vup, List<Point> prePoints);
+
     /**
      * Checks the color of the pixel with the help of Division of the pixel into a network of sub-pixels
      * @param centerP center pixl
